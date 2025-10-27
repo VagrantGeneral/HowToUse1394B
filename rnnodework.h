@@ -2,8 +2,8 @@
 #define RNNODEWORK_H
 
 #include "Mil1394_Emu_XT.h"
-#include "Mil1394_Emu_Addr.h"
 #include "messagestats.h"
+#include <QtGlobal>
 #include <QThread>
 
 class RNnodeWork : public QThread {
@@ -18,20 +18,26 @@ public slots:
     // 配置RN节点的STOF接收参数
     bool configRnNodeStof();
 
-    // 启动RN节点STOF消息接收
+    // 配置RN节点的Asyn发送
+    bool configRnNodeAsynSend();
+
+    // 配置RN节点的Asyn接收
+    bool configRnNodeAsynRecv();
+
+    // 启动RN节点STOF/Asyn消息接收
     bool startRnNodeStofRecv();
 
-    // 停止RN节点STOF消息接收
+    // 停止RN节点STOF/Asyn消息接收
     bool stopRnNodeStofRecv();
+
+    // 启动RN节点Asyn消息发送
+    bool startRnNodeAsynSend();
+
+    // 停止RN节点Asyn消息发送
+    bool stopRnNodeAsynSend();
 
     // 关闭RN节点并释放资源
     void closeRnNode();
-
-    // // 验证STOF消息的有效性和正确性
-    // bool validateStofMessage(const _MsgSTOF& stofMsg);
-
-    // // 更新STOF消息统计信息
-    // void updateStofStats(bool messageReceived);
 
     // 获取RN节点的消息计数
     void getRnMessageCounts();
@@ -47,11 +53,20 @@ protected:
     void run() override;
 
 signals:
+    //
+    void updateMessageCounts(TNFU32 rnmessagecount[]);
 
+    //
+    void updateStateText(QString statestr);
 private:
-    TNFU32 rnMeassageCounts[ERR_TopicIDCNT + 1] = {0};  // RN节点的消息计数
-    // StofMessageStats    stofstats;                      // STOF消息统计信息实例
-    _MsgSTOF            receivedStofPackage;            // 接收的STOF消息包
+    TNFU32 rnMeassageCounts[ERR_TopicIDCNT + 1] = {0};  // RN节点的所有消息计数
+    _MsgSTOF            receivedStofPackage;            // RN节点接收的STOF消息包
+    _MsgAsyn            receivedAsynPackage;            // RN节点接收的Asyn消息包
+    _MsgAsyn            rn2CcAsynPackage;               // RN节点发送到RN节点的Asyn消息包
+    _TNF_ASYNCCFG_Struct rn2CcAsynCfg;                  // RN节点发送到RN节点的Asyn配置结构体
+
+    TNFU32              deviceNo = DEVICE_NO;           //
+    TNFU32              rnNodeNo = RN_NODE_NO;          //
     _TNF_Node_Struct*   hRnNode = nullptr;              // RN节点句柄
     bool                bRnNodeOpened = false;          // RN节点打开状态标志
     bool                bStopRequested = false;         // 停止请求标志
