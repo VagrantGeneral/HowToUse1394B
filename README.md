@@ -497,8 +497,52 @@ typedef struct {
     TNFU32  MessageID;           /* 消息ID */
 }_MsgState;
 ```
-
 这样我们就很清楚他的接收机制了。
 
+除了收发的功能，1394还提供了消息计数功能，因为在收发的过程中，计数是一个非常重要的东西，我们可以根据计数来判断消息的连续和准确性。
+
+1394提供了以下这些消息计数类型，帮助我们快速获得相应的计数：
+```C++
+// 消息计数
+enum TNF_Msg_CNT{
+    BusResetCNT = 1U,           /* 总线复位计数 */
+    STOF_SendCNT,               /* STOF包发送计数 */
+    STOF_RecvCNT,               /* STOF包接收计数 */
+    Asyn_SendCNT,               /* 异步消息发送计数 */
+    Asyn_RecvCNT,               /* 异步消息接收计数 */
+    ERR_Asyn_HCRCCNT,           /* 异步消息头CRC错误计数 */
+    ERR_Asyn_MsgIDCNT,          /* 异步消息ID错误计数 */
+    ERR_Asyn_DCRCCNT,           /* 异步消息数据CRC错误计数 */
+    ERR_Asyn_VPCCNT,            /* 异步消息VPC错误计数 */
+    Event_SendCNT,              /* 事件消息发送计数 */
+    Event_SendErrCNT,           /* 事件消息发送错误计数 */
+    Event_RecvCNT,              /* 事件消息接收计数 */
+    ERR_Event_DCRCCNT,          /* 事件消息数据CRC错误计数 */
+    ERR_Event_VPCCNT,           /* 事件消息VPC错误计数 */
+    ERR_STOF_VPCCNT,            /* STOF消息VPC错误计数 */
+    ERR_STOF_DCRCCNT,           /* STOF消息数据CRC错误计数 */
+    ERR_Asyn_SVPCCNT,           /* 异步流软件VPC错误计数 */
+    ERR_Event_SVPCCNT,          /* 事件消息软件VPC错误计数 */
+    ERR_TopicIDCNT              /* 主题ID错误计数 */
+};
+```
+
+而获取的方法也非常的简单，只需要调用方法传入对应的索引便可直接获取，如下所示：
+```C++
+// 获取STOF接收计数
+TNFU32 stofRecvCount = 0;
+Mil1394_MSG_Cnt_Get(hRnNode, STOF_RecvCNT, &stofRecvCount);
+
+// 获取STOF发送计数
+TNFU32 stofSendCount = 0;
+Mil1394_MSG_Cnt_Get(hCcNode, STOF_SendCNT, &stofSendCount);
+
+// 获取错误计数
+TNFU32 errCounts[ERR_TopicIDCNT + 1] = {0};
+Mil1394_MSG_Cnt_Get(hNode, ERR_Asyn_HCRCCNT, &errCounts[ERR_Asyn_HCRCCNT]);
+Mil1394_MSG_Cnt_Get(hNode, ERR_Asyn_MsgIDCNT, &errCounts[ERR_Asyn_MsgIDCNT]);
+Mil1394_MSG_Cnt_Get(hNode, ERR_Asyn_DCRCCNT, &errCounts[ERR_Asyn_DCRCCNT]);
+Mil1394_MSG_Cnt_Get(hNode, ERR_Asyn_VPCCNT, &errCounts[ERR_Asyn_VPCCNT]);
+```
 
 到这里，1394常用的内容就完成了。
