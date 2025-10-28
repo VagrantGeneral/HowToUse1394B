@@ -245,6 +245,9 @@ void RNnodeWork::processMessage(_RcvMsgList *msgList) {
             //
             memset(&receivedStofPackage, 0, sizeof(receivedStofPackage));
             if (MSG_RECV_Packet_STOF(hRnNode, &receivedStofPackage, msgState) == OK) {
+                QString str;
+                str = QString::number(receivedStofPackage.STOFPayload0) + " " + QString::number(receivedStofPackage.STOFPayload3);
+                emit updateStateText(str);
                 //std::cout << "  Payload0: 0x" << std::hex << stofMsg.STOFPayload0 << std::dec << std::endl;
                 //std::cout << "  Payload3: 0x" << std::hex << stofMsg.STOFPayload3 << std::dec << std::endl;
             }
@@ -254,6 +257,9 @@ void RNnodeWork::processMessage(_RcvMsgList *msgList) {
             //
             memset(&receivedAsynPackage, 0, sizeof(receivedAsynPackage));
             if (MSG_RECV_Packet_Asyn(hRnNode, msgState->MessageID, &receivedAsynPackage, msgState) == OK) {
+                QString str;
+                str = QString::number(receivedAsynPackage.Header1394) + " " + QString::number(receivedAsynPackage.MessageID);
+                emit updateStateText(str);
                 //std::cout << "  MessageID: 0x" << std::hex << asyncMsg.MessageID << std::dec << std::endl;
                 //std::cout << "  PayloadLen: " << asyncMsg.payloadLen << " 字节" << std::endl;
             }
@@ -301,31 +307,34 @@ void RNnodeWork::run() {
     // 初始化RN节点（接收方），确保接收方先就绪
     if (!initRnNode()) {
         //throw "RN节点初始化失败";
+        return;
     }
         
     // 配置RN节点STOF接收参数，设置接收周期和容错范围
     if (!configRnNodeStof()) {
         //throw "RN节点STOF配置失败";
+        return;
     }
 
     // 配置RN节点Asyn消息接收
     if (!configRnNodeAsynRecv()) {
-
+        return;
     }
 
     // 配置RN节点Asyn消息发送
     if (!configRnNodeAsynSend()) {
-
+        return;
     }
         
     // 启动RN节点STOF接收功能，准备接收来自CC节点的消息
     if (!startRnNodeStofRecv()) {
         //throw "RN节点STOF接收启动失败";
+        return;
     }
 
     // 启动RN节点Asyn发送功能
     if (!startRnNodeAsynSend()) {
-
+        return;
     }
          
     // 进入消息接收主循环

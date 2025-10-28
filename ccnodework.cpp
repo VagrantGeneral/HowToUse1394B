@@ -144,10 +144,10 @@ bool CCnodeWork::configCcNodeAsynRecv() {
     
     // 加载异步消息接收配置参数
     if (MSG_ASYNC_LoadCfg(hCcNode,
-                          1,              // 发送配置数量（RN节点不发送）
+                          1,              // 发送配置数量
                           1,              // 接收配置数量
                           1,              // 通道号
-                          CcNodeTxConfigArr,        // 发送配置数组（RN节点不发送）
+                          CcNodeTxConfigArr,        // 发送配置数组
                           CcNodeRxConfigArr) // 接收配置数组
         != OK) {
         //printf("【错误】配置CC节点异步消息接收失败\n");
@@ -299,6 +299,9 @@ void CCnodeWork::processMessage(_RcvMsgList *msgList) {
             //
             memset(&receivedAsynPackage, 0, sizeof(receivedAsynPackage));
             if (MSG_RECV_Packet_Asyn(hCcNode, msgState->MessageID, &receivedAsynPackage, msgState) == OK) {
+                QString str;
+                str = QString::number(receivedAsynPackage.Header1394) + " " + QString::number(receivedAsynPackage.MessageID);
+                emit updateStateText(str);
                 //std::cout << "  MessageID: 0x" << std::hex << asyncMsg.MessageID << std::dec << std::endl;
                 //std::cout << "  PayloadLen: " << asyncMsg.payloadLen << " 字节" << std::endl;
             }
