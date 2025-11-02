@@ -45,11 +45,11 @@ public slots:
     // 关闭CC节点并释放资源
     void closeCcNode();
 
-    //
+    // 设置STOF消息内容
     void setStofContent(TNFU32 payload0, TNFU32 payload1, TNFU32 payload2, TNFU32 payload3,
                         TNFU32 payload4, TNFU32 payload5, TNFU32 payload6, TNFU32 payload7, TNFU32 payload8);
 
-    //
+    // 设置Asyn消息内容
     void setAsyncContent(const TNFU32 data[], int length);
 
     // 获取Cc节点的消息计数

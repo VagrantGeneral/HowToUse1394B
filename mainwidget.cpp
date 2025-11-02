@@ -11,13 +11,13 @@ MainWidget::MainWidget(QWidget *parent)
     rnnodeworker = new RNnodeWork(this);
 
     // SIGNAL--->SLOT
-    //
+    // 点击按钮，开启线程
     connect(ui->startbtn_, &QPushButton::clicked, this, [=]() {
         rnnodeworker->start();
         ccnodeworker->start();
     });
 
-    //
+    // 状态更新，获取计数
     connect(ccnodeworker, &CCnodeWork::updateMessageCounts, this, [=](TNFU32 ccmessagecount[]) {
         // STOF
         ui->ccSTOFsend->setText(QString::number(ccmessagecount[STOF_SendCNT]));
@@ -33,7 +33,7 @@ MainWidget::MainWidget(QWidget *parent)
         ui->ccAsynappvpc->setText(QString::number(ccmessagecount[ERR_Asyn_SVPCCNT]));
     });
 
-    //
+    // 状态更新，获取计数
     connect(rnnodeworker, &RNnodeWork::updateMessageCounts, this, [=](TNFU32 rnmessagecount[]) {
         // STOF
         ui->rnSTOFsend->setText(QString::number(rnmessagecount[STOF_SendCNT]));
@@ -49,18 +49,18 @@ MainWidget::MainWidget(QWidget *parent)
         ui->rnAsynappvpc->setText(QString::number(rnmessagecount[ERR_Asyn_SVPCCNT]));
     });
 
-    //
+    // 状态更新，打印消息
     connect(ccnodeworker, &CCnodeWork::updateStateText, this, [=](QString statestr) {
         ui->ccTextBrow_->append(statestr);
     });
 
-    //
+    // 状态更新， 打印消息
     connect(rnnodeworker, &RNnodeWork::updateStateText, this, [=](QString statestr) {
         ui->rnTextBrow_->append(statestr);
     });
 
     //
-    //
+    // 点击按钮，设置STOF消息
     connect(ui->ccstofdatasetbtn_, &QPushButton::clicked, this, [=]() {
         //
         TNFU32 load0str = stringToTNFU32((ui->loadedit0_->text()).toStdString());  // toStdString();
@@ -78,7 +78,7 @@ MainWidget::MainWidget(QWidget *parent)
                                      load6str, load7str, load8str);
     });
 
-    //
+    // 点击按钮，设置Asyn消息
     connect(ui->ccasyndatasetbtn_, &QPushButton::clicked, this, [=]() {
         //
         std::string datastr = (ui->ccAsynTextedit_->toPlainText()).toStdString();
@@ -90,7 +90,7 @@ MainWidget::MainWidget(QWidget *parent)
         ccnodeworker->setAsyncContent(asyndata, 100);
     });
 
-    //
+    // 点击按钮，设置Asyn消息
     connect(ui->rnasyndatasetbtn_, &QPushButton::clicked, this, [=]() {
         //
         std::string datastr = (ui->rnAsynTextedit_->toPlainText()).toStdString();
@@ -108,7 +108,7 @@ MainWidget::~MainWidget() {
     delete ui;
 }
 
-//
+// 字符串转TNFU32 For STOF PayLoad
 TNFU32 MainWidget::stringToTNFU32(const std::string &str) {
     // 处理十六进制字符串（以0x或0X开头）
     if (str.length() >= 2 && (str.substr(0, 2) == "0x" || str.substr(0, 2) == "0X")) {
@@ -124,6 +124,7 @@ TNFU32 MainWidget::stringToTNFU32(const std::string &str) {
     return static_cast<TNFU32>(std::stoull(str, nullptr, 10));
 }
 
+// 字符串转TNFU32[] For Asyn Msg
 size_t MainWidget::stringToTNFU32Array(const std::string &str, TNFU32 data[], size_t maxElements) {
     // 计算字符串长度（以字节为单位）
     size_t strLength = str.length();

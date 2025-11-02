@@ -225,7 +225,7 @@ void RNnodeWork::getRnMessageCounts() {
     }
 }
 
-//
+// 设置Asyn消息内容
 void RNnodeWork::setAsyncContent(const TNFU32 data[], int length) {
     int copyLength = (length < RN2CC_ASYNC_PAYLOAD_LEN/4) ? length : RN2CC_ASYNC_PAYLOAD_LEN/4;
     copyLength = (copyLength < 502) ? copyLength : 502;

@@ -17,10 +17,10 @@ public:
     MainWidget(QWidget *parent = nullptr);
     ~MainWidget();
 
-    //For STOF PayLoad
+    // 字符串转TNFU32 For STOF PayLoad
     TNFU32 stringToTNFU32(const std::string& str);
 
-    //For Asyn Msg
+    // 字符串转TNFU32[] For Asyn Msg
     //int stringToAsyncMessage(_MsgAsyn& asyncMsg, const std::string& content);
     size_t stringToTNFU32Array(const std::string& str, TNFU32 data[], size_t maxElements);
 
