@@ -225,6 +225,24 @@ void RNnodeWork::getRnMessageCounts() {
     }
 }
 
+//
+void RNnodeWork::setAsyncContent(const TNFU32 data[], int length) {
+    int copyLength = (length < RN2CC_ASYNC_PAYLOAD_LEN/4) ? length : RN2CC_ASYNC_PAYLOAD_LEN/4;
+    copyLength = (copyLength < 502) ? copyLength : 502;
+
+    for (int i = 0; i < copyLength; i++) {
+        rn2CcAsynPackage.msgData[i] = data[i];
+    }
+
+    // 更新负载长度
+    rn2CcAsynPackage.payloadLen = copyLength * 4;
+
+    // 更新异步消息发送数据
+    if (hRnNode != nullptr) {
+        MSG_ASYNC_SEND_DATA_Set(hRnNode, 0, 0, reinterpret_cast<TNFU32*>(&rn2CcAsynPackage));
+    }
+}
+
 // 处理消息
 void RNnodeWork::processMessage(_RcvMsgList *msgList) {
     // 确保是一条可用的消息

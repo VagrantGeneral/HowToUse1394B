@@ -42,6 +42,9 @@ public slots:
     // 获取RN节点的消息计数
     void getRnMessageCounts();
 
+    //
+    void setAsyncContent(const TNFU32 data[], int length);
+
     // 处理消息
     void processMessage(_RcvMsgList* msgList);
 

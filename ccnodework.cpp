@@ -259,6 +259,46 @@ void CCnodeWork::closeCcNode() {
     //emit statusMessage("【清理】CC节点已关闭，资源已释放");
 }
 
+//
+void CCnodeWork::setStofContent(TNFU32 payload0, TNFU32 payload1, TNFU32 payload2,
+                                TNFU32 payload3, TNFU32 payload4, TNFU32 payload5,
+                                TNFU32 payload6, TNFU32 payload7, TNFU32 payload8) {
+    //
+    cc2RnStofPackage.STOFPayload0 = payload0;
+    cc2RnStofPackage.STOFPayload1 = payload1;
+    cc2RnStofPackage.STOFPayload2 = payload2;
+    cc2RnStofPackage.STOFPayload3 = payload3;
+    cc2RnStofPackage.STOFPayload4 = payload4;
+    cc2RnStofPackage.STOFPayload5 = payload5;
+    cc2RnStofPackage.STOFPayload6 = payload6;
+    cc2RnStofPackage.STOFPayload7 = payload7;
+    cc2RnStofPackage.STOFPayload8 = payload8;
+
+    // 更新STOF消息发送数据
+    if (hCcNode != nullptr) {
+        MSG_STOF_SEND_DATA_Set(hCcNode, &cc2RnStofPackage);
+    }
+}
+
+//
+void CCnodeWork::setAsyncContent(const TNFU32 data[], int length) {
+    //
+    int copyLength = (length < CC2RN_ASYNC_PAYLOAD_LEN/4) ? length : CC2RN_ASYNC_PAYLOAD_LEN/4;
+    copyLength = (copyLength < 502) ? copyLength : 502;
+
+    for (int i = 0; i < copyLength; i++) {
+        cc2RnAsynPackage.msgData[i] = data[i];
+    }
+
+    // 更新负载长度
+    cc2RnAsynPackage.payloadLen = copyLength * 4;
+
+    // 更新异步消息发送数据
+    if (hCcNode != nullptr) {
+        MSG_ASYNC_SEND_DATA_Set(hCcNode, 0, 0, reinterpret_cast<TNFU32*>(&cc2RnAsynPackage));
+    }
+}
+
 // 获取Cc节点的消息计数
 void CCnodeWork::getCcMessageCounts() {
     if (hCcNode == nullptr) {
